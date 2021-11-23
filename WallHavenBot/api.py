@@ -3,7 +3,6 @@ from requests import get
 from WallHavenBot import API_KEY, bot, CHANNEL_ID
 from telegram import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.error import TelegramError
-from pymongo.errors import PyMongoError
 
 
 EMOJI = {
