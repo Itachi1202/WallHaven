@@ -1,0 +1,6 @@
+pymongo
+certifi
+python-telegram-bot==13.7
+dnspython
+requests
+python-dotenv
