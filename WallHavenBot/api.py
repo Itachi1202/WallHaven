@@ -28,10 +28,14 @@ class WallHavenWallpaper:
             self.resolution = wall_data["resolution"]
             self.id = id
             self.size = wall_data["file_size"]
-            if wall_data["tags"][0]["name"] != "anime":
-                self.name = wall_data["tags"][0]["name"]
-            if wall_data["tags"][0]["name"] == "anime":
-                if wall_data["tags"][0]["alias"] != "":
+            if not len(wall_data["tags"]) > 1:
+                tag = wall_data["tags"][0]
+            if len(wall_data["tags"]) > 1:
+                tag = wall_data["tags"][1]
+            if tag["name"] != "anime":
+                self.name = tag["name"]
+            if tag["name"] == "anime":
+                if tag["alias"] != "":
                     self.name = wall_data["tags"][0]["alias"]
                 else:
                     self.name = "Anime"
