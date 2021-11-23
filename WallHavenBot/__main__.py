@@ -29,6 +29,7 @@ class setInterval:
 def auto_post():
     tracker = PostTracker()
     recent_posts = WallHavenSearch()
+    recent_posts.update()
     latest_post_id = tracker.post_id
     wall_list = recent_posts.wall_list
     posts = []

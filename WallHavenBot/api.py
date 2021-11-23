@@ -97,16 +97,9 @@ class WallHavenSearch:
     def __init__(self) -> None:
         self.url = "https://wallhaven.cc/api/v1/search?q=id:1&categories=010&purity=110&sorting=date_added"
         self.per_page = 24
-        try:
-            wall_search = get(self.url,
-                headers = {
-                    "X-Api-Key": API_KEY
-                }
-            )
-        except Exception:
-            wall_search = None
-        if wall_search and wall_search.status_code == 200:
-            wall_data = wall_search.json()
+        self.wall_search = None
+        if self.wall_search and self.wall_search.status_code == 200:
+            wall_data = self.wall_search.json()
             meta = wall_data["meta"]
             self.total = meta["total"]
             self.last_page = meta["last_page"]
@@ -123,4 +116,14 @@ class WallHavenSearch:
             self.last_page = 1
             self.current_page = 1
             self.wall_list = []
+    
+    def update(self):
+        try:
+           self.wall_search = get(self.url,
+                headers = {
+                    "X-Api-Key": API_KEY
+                }
+            )
+        except Exception:
+           self.wall_search = None
 
