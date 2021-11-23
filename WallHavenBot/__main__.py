@@ -97,7 +97,6 @@ def hearts_likes_dislikes_button(update: Update, context: CallbackContext):
             caption_entities = msg.caption_entities,
             reply_markup = buttons
         )
-        query.answer()
     except TelegramError as e:
         print(e)
 
