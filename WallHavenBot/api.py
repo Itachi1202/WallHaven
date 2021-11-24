@@ -18,7 +18,7 @@ class WallHavenWallpaper:
         self.min_size = 1048576
         self.url = self.base_path + id
         try:
-            wall_info = get(self.url)
+            wall_info = get(self.url, headers={'Cache-Control': 'no-cache'})
         except Exception:
             wall_info = None
         if wall_info and str(wall_info.status_code)[0] == "2":
@@ -121,7 +121,8 @@ class WallHavenSearch:
         try:
            self.wall_search = get(self.url,
                 headers = {
-                    "X-Api-Key": API_KEY
+                    "X-Api-Key": API_KEY,
+                    "Cache-Control": 'no-cache'
                 }
             )
         except Exception:
