@@ -65,7 +65,6 @@ def send(post: dict):
 def auto_post():
     tracker = PostTracker()
     latest_post_id = tracker.post_id
-<<<<<<< HEAD
     wall_search = get(SEARCH_URL, 
         headers = {
             "X-Api-Key": API_KEY,
@@ -99,32 +98,6 @@ def auto_post():
             print("Nothing to post")
     else:
         print(wall_search)
-=======
-    wall_list = recent_posts.wall_list
-    posts = []
-    if tracker == "":
-        posts = wall_list
-    if tracker != "":
-        _tracker = 24
-        for i, wall in enumerate(wall_list):
-            if i < _tracker:
-                if wall.id != latest_post_id:
-                    posts.append(wall)
-                if wall.id == latest_post_id:
-                    _tracker = i
-            if i >= _tracker:
-                continue
-    posts.reverse()
-    print(posts)
-    if len(posts) > 0:
-        print("Loop started")
-        for post in posts:
-            post.send()
-        tracker.update(posts[-1].id)
-        print("Loop Completed")
-    if len(posts) <= 0:
-        print("Nothing to post")
->>>>>>> afa58d0eee2f6d2f72be62986e22073807ec8404
 
 
 def hearts_likes_dislikes_button(update: Update, context: CallbackContext):
