@@ -46,6 +46,7 @@ def auto_post():
             if i >= _tracker:
                 continue
     posts.reverse()
+    print(posts)
     if len(posts) > 0:
         print("Loop started")
         for post in posts:
