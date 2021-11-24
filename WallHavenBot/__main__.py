@@ -1,11 +1,12 @@
-from WallHavenBot.api import WallHavenSearch, EMOJI
-from WallHavenBot import updater, dispatcher
+from WallHavenBot.api import EMOJI
+from WallHavenBot import API_KEY, CHANNEL_ID, updater, dispatcher, bot
 from threading import Thread, Event
 from time import time
 from telegram.ext import CallbackContext, CallbackQueryHandler
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
 from WallHavenBot.tracker import PostTracker
 from telegram.error import TelegramError
+from requests import get
 
 class setInterval:
 
@@ -26,34 +27,77 @@ class setInterval:
         self.stop_event.set()
 
 
+SEARCH_URL = "https://wallhaven.cc/api/v1/search?q=id:1&categories=010&purity=110&sorting=date_added"
+
+def send(post: dict):
+    reply_text = "Anime (`{}`)\n@Not\_Anime\_Wallpapers".format(post["resolution"])
+    try:
+        bot.send_photo(
+            chat_id = CHANNEL_ID,
+            photo = post["path"],
+            caption = reply_text,
+            parse_mode = ParseMode.MARKDOWN
+        )
+        bot.send_document(
+            chat_id = CHANNEL_ID,
+            document = post["path"],
+            caption = reply_text,
+            parse_mode = ParseMode.MARKDOWN,
+            reply_markup = InlineKeyboardMarkup([[
+                InlineKeyboardButton(
+                    text = EMOJI["heart"], 
+                    callback_data = f"0:heart"
+                ),
+                InlineKeyboardButton(
+                    text = EMOJI["like"], 
+                    callback_data = f"0:like"
+                ),
+                InlineKeyboardButton(
+                    text = EMOJI["dislike"], 
+                    callback_data = f"0:dislike"
+                )
+            ]])
+        )
+    except TelegramError as e:
+        print(e)
+
+
 def auto_post():
     tracker = PostTracker()
-    recent_posts = WallHavenSearch()
-    recent_posts.update()
     latest_post_id = tracker.post_id
-    wall_list = recent_posts.wall_list
-    posts = []
-    if tracker == "":
-        posts = wall_list
-    if tracker != "":
-        _tracker = 24
-        for i, wall in enumerate(wall_list):
-            if i < _tracker:
-                if wall.id != latest_post_id:
-                    posts.append(wall)
-                if wall.id == latest_post_id:
-                    _tracker = i
-            if i >= _tracker:
-                continue
-    posts.reverse()
-    if len(posts) > 0:
-        print("Loop started")
-        for post in posts:
-            post.send()
-        tracker.update(posts[-1].id)
-        print("Loop Completed")
-    if len(posts) <= 0:
-        print("Nothing to post")
+    wall_search = get(SEARCH_URL, 
+        headers = {
+            "X-Api-Key": API_KEY,
+            "Cache-Control": "no-cache, private",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36"
+        }
+    )
+    if wall_search.status_code == 200:
+        wall_list = wall_search.json()["data"]
+        posts = []
+        if tracker == "":
+            posts = wall_list
+        if tracker != "":
+            _tracker = 24
+            for i, wall in enumerate(wall_list):
+                if i < _tracker:
+                    if wall["id"] != latest_post_id and wall["file_size"] >= 1024*1024:
+                        posts.append(wall)
+                    if wall["id"] == latest_post_id:
+                        _tracker = i
+                if i >= _tracker:
+                    continue
+        posts.reverse()
+        if len(posts) > 0:
+            print("Loop started")
+            for post in posts:
+                send(post)
+            tracker.update(posts[-1]["id"])
+            print("Loop Completed")
+        if len(posts) <= 0:
+            print("Nothing to post")
+    else:
+        print(wall_search)
 
 
 def hearts_likes_dislikes_button(update: Update, context: CallbackContext):
