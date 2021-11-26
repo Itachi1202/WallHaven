@@ -1,6 +1,6 @@
 from WallHavenBot.api import EMOJI
 from WallHavenBot import API_KEY, CHANNEL_ID, updater, dispatcher, bot
-from threading import Thread, Event
+from threading import Thread, Event, Timer
 from time import time
 from telegram.ext import CallbackContext, CallbackQueryHandler
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ParseMode
@@ -90,8 +90,10 @@ def auto_post():
         posts.reverse()
         if len(posts) > 0:
             print("Loop started")
+            counter = 0
             for post in posts:
-                send(post)
+                Timer(counter, send, (post)).start()
+                counter += 1
             tracker.update(posts[-1]["id"])
             print("Loop Completed")
         if len(posts) <= 0:
