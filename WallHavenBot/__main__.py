@@ -27,7 +27,7 @@ class setInterval:
         self.stop_event.set()
 
 
-SEARCH_URL = "https://wallhaven.cc/api/v1/search?q=id:1&categories=010&purity=110&sorting=date_added"
+SEARCH_URL = "https://wallhaven.cc/api/v1/search?q=id:1&categories=010&purity=100&sorting=date_added"
 
 def send(post: dict):
     reply_text = "Anime (`{}`)\n@Not\_Anime\_Wallpapers".format(post["resolution"])
